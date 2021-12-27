@@ -1,0 +1,56 @@
+﻿@model BookStore.WebApplication.Models.LoginModel
+@{ 
+    ViewData["Title"] = "Login";
+}
+
+<div class="img js-fullheight" style="background-image: url(https://image.vtc.vn/resize/th/upload/2021/12/21/xe3-22232551.jpg)">
+
+    <section class="ftco-section">
+        <div class="container">
+
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="login-wrap p-0">
+                        <h3 class="mb-4 text-center">Hệ thống</h3>
+                        <form asp-action="Login" class="signin-form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" asp-for="UserName" placeholder="Username" required>
+                            </div>
+                            <div class="form-group">
+                                <input id="password-field" type="password" asp-for="PassWord" class="form-control" placeholder="Password" required>
+                                <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                            </div>
+                            <input type="hidden" asp-for="ReturnUrl" class="form-control" />
+                            <div class="form-group">
+                                <input type="submit" class="form-control btn btn-primary submit px-3">Sign In</input>
+                            </div>
+                            <div class="form-group d-md-flex">
+                                <div class="w-50">
+                                    <label class="checkbox-wrap checkbox-primary">
+                                        Remember Me
+                                        <input type="checkbox" checked>
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                                <div class="w-50 text-md-right">
+                                    <a href="#" style="color: #fff">Forgot Password</a>
+                                </div>
+                            </div>
+                        </form>
+                        <p class="w-100 text-center">&mdash; Or Sign In With &mdash;</p>
+                        <div class="social d-flex text-center">
+                            <a href="#" class="px-2 py-2 mr-md-1 rounded"><span class="ion-logo-facebook mr-2"></span> Facebook</a>
+                            <a asp-action="LoginWidthGoogle" asp-route-returnUrl="@Model.ReturnUrl" class="px-2 py-2 ml-md-1 rounded"><span class="ion-logo-google mr-2"></span> Google</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+
+@section  Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
