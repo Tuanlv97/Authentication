@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace BookStore.WebApplication.Clamins
 {
-    public class ApplicationUserClaimsprincipalFactory : UserClaimsPrincipalFactory<ApplicationUser>
+    public class ApplicationUserClaimsprincipalFactory : UserClaimsPrincipalFactory<ApplicationUser, IdentityRole>
     {
-        public ApplicationUserClaimsprincipalFactory(UserManager<ApplicationUser> userManager, IOptions<IdentityOptions> optionsAccessor) : base(userManager, optionsAccessor)
+        public ApplicationUserClaimsprincipalFactory(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<IdentityOptions> optionsAccessor) : base(userManager, roleManager, optionsAccessor)
         {
         }
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(ApplicationUser user)

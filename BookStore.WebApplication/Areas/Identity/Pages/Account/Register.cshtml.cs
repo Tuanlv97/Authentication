@@ -95,6 +95,9 @@ namespace BookStore.WebApplication.Areas.Identity.Pages.Account
                     await _userManager.AddClaimAsync(user, new Claim("DateOfBirth", Input.DateOfBirth.ToString()));
                     _logger.LogInformation("User create width Dob Claim.");
 
+                    await _userManager.AddToRoleAsync(user, "Administrator");
+                    _logger.LogInformation("User create width role is Administrator");
+
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
