@@ -1,8 +1,10 @@
 ﻿using BookStore.WebApplication.Clamins;
 using BookStore.WebApplication.Data;
+using BookStore.WebApplication.Email;
 using BookStore.WebApplication.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,11 +22,12 @@ namespace BookStore.WebApplication.Areas.Identity
                     options.UseSqlServer(
                         context.Configuration.GetConnectionString("BookStoreContextConnection")));
 
-                services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+                services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddDefaultUI()
                     .AddDefaultTokenProviders()
                     .AddEntityFrameworkStores<BookStoreContext>();
                 services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsprincipalFactory>();
+                services.AddTransient<IEmailSender, CustomEmailSender>();
             });
         }
     }
