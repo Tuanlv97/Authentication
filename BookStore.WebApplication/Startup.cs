@@ -28,17 +28,18 @@ namespace BookStore.WebApplication
             ServicesInjection.AddProjectModules(services);
             services.AddTransient<IUserReponsitory, UserReponsitory>();
             services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
-            services.AddAuthentication(o =>
-            {
-                o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-               // o.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-            })
-                .AddCookie()
-                .AddGoogle(o =>
-                {
-                    o.ClientId = "381890139910-ie8d4ba1c8hp32u8s19s442m1cpjsjg9.apps.googleusercontent.com";
-                    o.ClientSecret = "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";
-                });
+            services.AddMvc();
+            //services.AddAuthentication(o =>
+            //{
+            //    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //   // o.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+            //})
+            //    .AddCookie()
+            //    .AddGoogle(o =>
+            //    {
+            //        o.ClientId = "381890139910-ie8d4ba1c8hp32u8s19s442m1cpjsjg9.apps.googleusercontent.com";
+            //        o.ClientSecret = "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";
+            //    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,6 +67,7 @@ namespace BookStore.WebApplication
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }
