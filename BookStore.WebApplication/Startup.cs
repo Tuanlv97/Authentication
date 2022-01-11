@@ -1,14 +1,9 @@
 using BookStore.Data.Extensions;
-using BookStore.Data.Repositories;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Net;
 
 namespace BookStore.WebApplication
 {
@@ -24,10 +19,10 @@ namespace BookStore.WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+
             ServicesInjection.AddProjectModules(services);
-            services.AddTransient<IUserReponsitory, UserReponsitory>();
-            services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
+            //   services.AddTransient<IUserReponsitory, UserReponsitory>();
+            //services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
             services.AddMvc();
             //services.AddAuthentication(o =>
             //{
@@ -59,8 +54,8 @@ namespace BookStore.WebApplication
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
+            //app.UseAuthentication();
+             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
