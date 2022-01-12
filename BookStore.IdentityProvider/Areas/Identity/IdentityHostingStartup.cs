@@ -1,4 +1,4 @@
-﻿using BookStore.IdentityProvider.Areas.Identity.Data;
+﻿using BookStore.IdentityProvider.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -19,19 +19,19 @@ namespace BookStore.IdentityProvider.Areas.Identity
                     options.UseSqlServer(
                         context.Configuration.GetConnectionString("BookStoreIdentityProviderContextConnection")));
 
-                services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<BookStoreIdentityProviderContext>().AddDefaultUI()
                     .AddDefaultTokenProviders();
+
                 services.AddAuthentication()
-                .AddGoogle(o =>
-                {
+                .AddGoogle(o => {
                     o.ClientId = context.Configuration["GoogleAuthentication:ClientId"];
                     o.ClientSecret = context.Configuration["GoogleAuthentication:ClientSecret"];
                 }
-              );
-                services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
-                services.AddTransient<IEmailSender, CustomEmailSender>();
-            });
+                );
+                    services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
+                    services.AddTransient<IEmailSender, CustomEmailSender>();
+        });
         }
     }
 }
