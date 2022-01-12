@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookStore.Data", "Authentic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookStore.WebApplication", "BookStore.WebApplication\BookStore.WebApplication.csproj", "{2F7A2275-B1FE-458A-B95C-9A22B58B8FAA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookStore.IdentityProvider", "BookStore.IdentityProvider\BookStore.IdentityProvider.csproj", "{5F791978-25C2-4697-B627-F38216637B68}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2F7A2275-B1FE-458A-B95C-9A22B58B8FAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F7A2275-B1FE-458A-B95C-9A22B58B8FAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F7A2275-B1FE-458A-B95C-9A22B58B8FAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F791978-25C2-4697-B627-F38216637B68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F791978-25C2-4697-B627-F38216637B68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F791978-25C2-4697-B627-F38216637B68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F791978-25C2-4697-B627-F38216637B68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

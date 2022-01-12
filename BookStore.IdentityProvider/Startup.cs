@@ -1,14 +1,19 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using BookStore.IdentityProvider.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace BookStore.WebApplication
+namespace BookStore.IdentityProvider
 {
     public class Startup
     {
@@ -22,36 +27,28 @@ namespace BookStore.WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
 
-            services.AddAuthentication(x =>
-            {
-                x.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-                .AddCookie()
-                .AddOpenIdConnect(o =>
-                {
-                    o.Authority = "";
-                    o.ClientId = "bookstore_webapp";
-                    o.ClientSecret = "supersecret";
-                    o.CallbackPath = "/sign-oidc";
+            services.AddControllersWithViews();
+            services.AddMvc();
 
-                    o.Scope.Add("openId");
-                    o.Scope.Add("bookstore");
-                    o.Scope.Add("bookstore_apis");
+            services.AddIdentityServer()
+                    .AddInMemoryApiResources(Configuration.GetSection("IdentityServer:IdentityResources"))
+                    .AddInMemoryApiResources(Configuration.GetSection("IdentityServer:ApiResources"))
+                    .AddInMemoryClients(Configuration.GetSection("IdentityServer:Clients"))
+                    .AddDeveloperSigningCredential()
+                    .AddAspNetIdentity<ApplicationUser>();
 
-                    o.SaveTokens = true;
-                    o.GetClaimsFromUserInfoEndpoint = true;
+            services.AddCors(o => o.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader()));
 
-                    o.ClaimActions.MapUniqueJsonKey("Address", "Address");
-
-                    o.ResponseType = "code";
-                    o.ResponseMode = "form_post";
-
-                    o.UsePkce = true;
-                });
-
+            //services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer(
+            //        Configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDatabaseDeveloperPageExceptionFilter();
+            //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            //    .AddEntityFrameworkStores<ApplicationDbContext>();
+            //services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,6 +57,7 @@ namespace BookStore.WebApplication
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseMigrationsEndPoint();
             }
             else
             {
@@ -70,7 +68,10 @@ namespace BookStore.WebApplication
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseCors("AllowAll");
+
             app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
