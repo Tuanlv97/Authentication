@@ -1,12 +1,15 @@
+﻿using BookStore.WebApplication.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace BookStore.WebApplication
 {
@@ -33,24 +36,38 @@ namespace BookStore.WebApplication
                 .AddCookie()
                 .AddOpenIdConnect(o =>
                 {
-                    o.Authority = "https://localhost:44380";
+                    o.Authority = "https://localhost:44378";
                     o.ClientId = "bookstore_webapp";
                     o.ClientSecret = "supersecret";
                     o.CallbackPath = "/sign-oidc";
 
-                    o.Scope.Add("openId");
-                    o.Scope.Add("bookstore");
-                    o.Scope.Add("bookstore_apis");
+                    //o.Scope.Add("openid");//đây nhé openId khác nhau openid
+                    //o.Scope.Add("bookstore");
+                    //o.Scope.Add("bookstore_apis");
 
                     o.SaveTokens = true;
                     o.GetClaimsFromUserInfoEndpoint = true;
 
-                    o.ClaimActions.MapUniqueJsonKey("Address", "Address");
+                    ////o.ClaimActions.MapUniqueJsonKey("Address", "Address");
 
                     o.ResponseType = "code";
                     o.ResponseMode = "form_post";
 
                     o.UsePkce = true;
+                });
+            services.AddCors(o => o.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader()));
+
+            services.AddHttpContextAccessor();
+            services.AddHttpClient<IBookStoreAPIService, BookStoreAPIService>(
+                async (c, client) =>
+                {
+                    var accessor = c.GetRequiredService<IHttpContextAccessor>();
+                    var accessToken = await accessor.HttpContext.GetTokenAsync("access_token");
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                    //client.BaseAddress = new Uri("https://localhost:44378/api/");
+                    client.BaseAddress = new Uri("https://localhost:44341/api/");
                 });
 
         }
@@ -81,7 +98,7 @@ namespace BookStore.WebApplication
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-               // endpoints.MapRazorPages();
+                // endpoints.MapRazorPages();
             });
         }
     }

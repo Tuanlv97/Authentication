@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Authentication\BookStore.Data.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="AuthorizationHelpers\" />
     <Folder Include="wwwroot\fonts\" />
   </ItemGroup>
