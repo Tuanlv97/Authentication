@@ -23,6 +23,7 @@ namespace BookStore.WebApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
+            services.AddHttpContextAccessor();
 
             services.AddAuthentication(x =>
             {
@@ -32,7 +33,7 @@ namespace BookStore.WebApplication
                 .AddCookie()
                 .AddOpenIdConnect(o =>
                 {
-                    o.Authority = "";
+                    o.Authority = "https://localhost:44380";
                     o.ClientId = "bookstore_webapp";
                     o.ClientSecret = "supersecret";
                     o.CallbackPath = "/sign-oidc";
@@ -70,6 +71,7 @@ namespace BookStore.WebApplication
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseCors("AllowAll");
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -79,7 +81,7 @@ namespace BookStore.WebApplication
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
+               // endpoints.MapRazorPages();
             });
         }
     }

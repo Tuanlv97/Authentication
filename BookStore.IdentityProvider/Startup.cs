@@ -49,11 +49,11 @@ namespace BookStore.IdentityProvider
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseCors("AllowAll");
             app.UseRouting();
-
+      
+            app.UseIdentityServer();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
