@@ -25,50 +25,51 @@ namespace BookStore.WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
+            
+            //services.AddAuthentication(x =>
+            //{
+            //    x.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //    x.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            //})
+            //    .AddCookie()
+            //    .AddOpenIdConnect(o =>
+            //    {
+            //       // o.Authority = "https://localhost:44380";
+            //        o.Authority = "https://localhost:5000";
+            //        o.ClientId = "bookstore_webapp";
+            //        o.ClientSecret = "supersecret";
+            //        o.CallbackPath = "/sign-oidc";
+
+            //        o.Scope.Add("openid");//
+            //        o.Scope.Add("bookstore");
+            //        o.Scope.Add("bookstore_apis");
+
+            //        o.SaveTokens = true;
+            //        o.GetClaimsFromUserInfoEndpoint = true;
+
+            //        ////o.ClaimActions.MapUniqueJsonKey("Address", "Address");
+
+            //        o.ResponseType = "code";
+            //        o.ResponseMode = "form_post";
+
+            //        o.UsePkce = true;
+            //    });
+            //services.AddCors(o => o.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
+            //.AllowAnyMethod()
+            //.AllowAnyHeader()));
+
             services.AddHttpContextAccessor();
-
-            services.AddAuthentication(x =>
-            {
-                x.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-                .AddCookie()
-                .AddOpenIdConnect(o =>
-                {
-                    o.Authority = "https://localhost:44378";
-                    o.ClientId = "bookstore_webapp";
-                    o.ClientSecret = "supersecret";
-                    o.CallbackPath = "/sign-oidc";
-
-                    //o.Scope.Add("openid");//đây nhé openId khác nhau openid
-                    //o.Scope.Add("bookstore");
-                    //o.Scope.Add("bookstore_apis");
-
-                    o.SaveTokens = true;
-                    o.GetClaimsFromUserInfoEndpoint = true;
-
-                    ////o.ClaimActions.MapUniqueJsonKey("Address", "Address");
-
-                    o.ResponseType = "code";
-                    o.ResponseMode = "form_post";
-
-                    o.UsePkce = true;
-                });
-            services.AddCors(o => o.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader()));
-
-            services.AddHttpContextAccessor();
-            services.AddHttpClient<IBookStoreAPIService, BookStoreAPIService>(
-                async (c, client) =>
-                {
-                    var accessor = c.GetRequiredService<IHttpContextAccessor>();
-                    var accessToken = await accessor.HttpContext.GetTokenAsync("access_token");
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-                    //client.BaseAddress = new Uri("https://localhost:44378/api/");
-                    client.BaseAddress = new Uri("https://localhost:44341/api/");
-                });
+            //services.AddHttpClient<IBookStoreAPIService, BookStoreAPIService>(
+            //    async (c, client) =>
+            //    {
+            //        var accessor = c.GetRequiredService<IHttpContextAccessor>();
+            //        var accessToken = await accessor.HttpContext.GetTokenAsync("access_token");
+            //        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+            //        client.BaseAddress = new Uri("https://localhost:5009/api/");
+            //    });
+           services.AddHttpClient<IBookStoreAPIService, BookStoreAPIService>();
+            //services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
+            services.AddControllersWithViews();
 
         }
 

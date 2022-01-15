@@ -33,7 +33,7 @@ namespace BookStore.WebApi
                 IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
                 {
-                    options.Authority = "https://localhost:44378";
+                    options.Authority = "https://localhost:44380";
                     options.ApiName = "bookstore_apis";
                     options.ApiSecret = "supersecret";
                     options.EnableCaching = true;
