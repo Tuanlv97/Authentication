@@ -13,25 +13,8 @@ namespace BookStore.IdentityProvider.Areas.Identity
     {
         public void Configure(IWebHostBuilder builder)
         {
-            builder.ConfigureServices((context, services) =>
-            {
-                services.AddDbContext<BookStoreIdentityProviderContext>(options =>
-                    options.UseSqlServer(
-                        context.Configuration.GetConnectionString("BookStoreIdentityProviderContextConnection")));
-
-                services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-                    .AddEntityFrameworkStores<BookStoreIdentityProviderContext>().AddDefaultUI()
-                    .AddDefaultTokenProviders();
-
-                services.AddAuthentication();
-                //.AddGoogle(o => {
-                //    o.ClientId = context.Configuration["GoogleAuthentication:ClientId"];
-                //    o.ClientSecret = context.Configuration["GoogleAuthentication:ClientSecret"];
-                //}
-              //  );
-                    services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
-                    services.AddTransient<IEmailSender, CustomEmailSender>();
-        });
+            builder.ConfigureServices((context, services) => {
+            });
         }
     }
 }

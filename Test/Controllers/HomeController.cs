@@ -1,4 +1,5 @@
 ﻿using BookStore.WebApplication.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -14,6 +15,17 @@ namespace BookStore.WebApplication.Controllers
             _logger = logger;
         }
 
+        [Route("SignIn")]
+        public IActionResult SignIn()
+        {
+            return Challenge(new AuthenticationProperties { RedirectUri = "/" }, "oidc");
+        }
+
+        [Route("SignOut")]
+        public IActionResult SignOut()
+        {
+            return SignOut(new AuthenticationProperties { RedirectUri = "/" }, "Cookies", "oidc");
+        }
         public IActionResult Index()
         {
             return View();

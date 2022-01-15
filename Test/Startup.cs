@@ -1,17 +1,12 @@
 using BookStore.WebApplication.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using IdentityModel;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Test
 {
@@ -24,57 +19,41 @@ namespace Test
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
+            var secret = "secret".ToSha256();
             services.AddHttpContextAccessor();
-            services.AddAuthentication(x =>
+            services.AddAuthentication(options =>
             {
-                x.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-                .AddCookie()
-                .AddOpenIdConnect(o =>
-                {
-                    // o.Authority = "https://localhost:44380";
-                    o.Authority = "https://localhost:5000";
-                    o.ClientId = "bookstore_webapp";
-                    o.ClientSecret = "supersecret";
-                    o.CallbackPath = "/sign-oidc";
+                options.DefaultScheme = "Cookies";
+                options.DefaultChallengeScheme = "oidc";
+            }).AddCookie("Cookies")
+            .AddOpenIdConnect("oidc", o =>
+            {
+                o.SignInScheme = "Cookies";
+                o.Authority = "https://localhost:5000";
+                o.RequireHttpsMetadata = false;
+                o.GetClaimsFromUserInfoEndpoint = true;
+                o.ClientId = "bookstore_webapp";
+                o.ClientSecret = "secret";
+                o.Scope.Add("openid");
+                o.Scope.Add("profile");
+                o.Scope.Add("bookstore");
+                o.Scope.Add("bookstore_apis");
+                o.Scope.Add("bookstore_viewbook");
+                o.Scope.Add("bookstore");
+                o.ResponseType = "code";
+                o.SaveTokens = true;
+            });
 
-                    o.Scope.Add("openid");//
-                    o.Scope.Add("bookstore");
-                    o.Scope.Add("bookstore_apis");
-
-                    o.SaveTokens = true;
-                    o.GetClaimsFromUserInfoEndpoint = true;
-
-                    ////o.ClaimActions.MapUniqueJsonKey("Address", "Address");
-
-                    o.ResponseType = "code";
-                    o.ResponseMode = "form_post";
-
-                    o.UsePkce = true;
-                });
+            services.AddHttpClient<IBookStoreAPIService, BookStoreAPIService>();
             services.AddCors(o => o.AddPolicy("AllowAll", p => p.AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader()));
-
-            //services.AddHttpClient<IBookStoreAPIService, BookStoreAPIService>(
-            //    async (c, client) =>
-            //    {
-            //        var accessor = c.GetRequiredService<IHttpContextAccessor>();
-            //        var accessToken = await accessor.HttpContext.GetTokenAsync("access_token");
-            //        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-            //        client.BaseAddress = new Uri("https://localhost:5009/api/");
-            //    });
-            services.AddHttpClient<IBookStoreAPIService, BookStoreAPIService>();
-           
-            //services.AddControllersWithViews();
+            services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+     
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -84,7 +63,6 @@ namespace Test
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
             app.UseHttpsRedirection();

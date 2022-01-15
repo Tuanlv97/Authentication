@@ -15,8 +15,15 @@ namespace BookStore.IdentityProvider
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(ApplicationUser user)
         {
             var identity = await base.GenerateClaimsAsync(user);
-            identity.AddClaim(new Claim("CompanyStarted", user.CompanyStartedDate.ToString()));
-            identity.AddClaim(new Claim("Address", user.Address));
+            if(user.CompanyStartedDate != null && !string.IsNullOrWhiteSpace(user.CompanyStartedDate.ToString()))
+            {
+                identity.AddClaim(new Claim("CompanyStarted", user.CompanyStartedDate.ToString()));
+            }
+
+            if (!string.IsNullOrWhiteSpace(user.Address))
+            {
+                identity.AddClaim(new Claim("Address", user.Address));
+            }
             return identity;
         }
     }
