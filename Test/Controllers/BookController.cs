@@ -16,7 +16,7 @@ namespace BookStore.WebApplication.Controllers
         {
             _bookStoreAPIService = bookStoreAPIService;
         }
-        [Authorize(Roles = "Viewers, Administrator")]
+      // [Authorize(Roles = "Viewers, Administrator")]
         public async Task<IActionResult> Index()
         {
             var books = new List<BookModel>();

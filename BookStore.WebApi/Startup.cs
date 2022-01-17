@@ -1,17 +1,18 @@
 ﻿using BookStore.WebApi.Repositories;
-using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
 
 namespace BookStore.WebApi
 {
@@ -27,16 +28,19 @@ namespace BookStore.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers(o => o.Filters.Add(new AuthorizeFilter()));
-            services.AddDistributedMemoryCache();
+            services.AddControllers();
+            IdentityModelEventSource.ShowPII = true;
+           // services.AddControllers(o => o.Filters.Add(new AuthorizeFilter()));
+            //services.AddDistributedMemoryCache();
             services.AddAuthentication(
-                IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                .AddIdentityServerAuthentication(options =>
+                JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
-                    options.Authority = "https://localhost:44380";
-                    options.ApiName = "bookstore_apis";
-                    options.ApiSecret = "supersecret";
-                    options.EnableCaching = true;
+                    options.Authority = "https://localhost:5009";
+                    options.Audience = "bookstore_apis";
+                    //options.ApiName = "bookstore_apis";
+                    //options.ApiSecret = "supersecret";
+                    //options.EnableCaching = true;
                 });
             services.AddDbContext<BookStoreDBContext>(context => { context.UseInMemoryDatabase("BookStoreDB"); });
             services.AddScoped<IBookRepository, BookRepository>();
@@ -44,11 +48,46 @@ namespace BookStore.WebApi
             .AllowAnyMethod()
             .AllowAnyHeader()));
 
-            services.AddAuthorization(
-                o => {
-                    //o.AddPolicy("CanViewBook", p => p.RequireRole("Administrator"));
-                    //o.AddPolicy("CanViewBook", p => p.RequireClaim("scope", "bookstore_viewbook"));
+
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1",
+                    new Microsoft.OpenApi.Models.OpenApiInfo
+                    {
+                        Title = "Swagger Demo Api",
+                        Description = "Demo Api for showing Swagger",
+                        Version = "v1"
+                    });
+
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer"
                 });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new List<string>()
+                    }
+                });
+
+                var fileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+
+                var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
+                options.IncludeXmlComments(filePath);
+            });
 
         }
 
@@ -80,6 +119,14 @@ namespace BookStore.WebApi
             {
                 endpoints.MapControllers();
             });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                options.RoutePrefix = string.Empty;
+            });
+
         }
     }
 }

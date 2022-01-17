@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 namespace BookStore.WebApi.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class BookController : ControllerBase
     {
         private IBookRepository _bookRepository;
@@ -15,7 +17,6 @@ namespace BookStore.WebApi.Controllers
 
         // GET: api/Book
         [HttpGet]
-        [Authorize(Policy = "CanViewBook")]
         public IEnumerable<Book> Get()
         {
             var listBooks = _bookRepository.GetAllBooks();

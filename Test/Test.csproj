@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="AuthorizationHelpers\" />
     <Folder Include="wwwroot\fonts\" />
   </ItemGroup>
 

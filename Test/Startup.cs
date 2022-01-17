@@ -1,12 +1,18 @@
+using BookStore.Test.AuthorizationHelpers;
 using BookStore.WebApplication.Services;
 using IdentityModel;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Net.Http.Headers;
 
 namespace Test
 {
@@ -51,9 +57,20 @@ namespace Test
             .AllowAnyMethod()
             .AllowAnyHeader()));
             services.AddControllersWithViews(o => o.Filters.Add(new AuthorizeFilter()));
+
+            services.AddHttpClient<IBookStoreAPIService, BookStoreAPIService>(
+               async (c, client) =>
+               {
+                   var accessor = c.GetRequiredService<IHttpContextAccessor>();
+                   var accessToken = await accessor.HttpContext.GetTokenAsync("access_token");
+                   client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                   client.BaseAddress = new Uri("https://localhost:5009/api/");
+               });
+            services.AddSingleton<IAuthorizationHandler, StartedYearAuthorizationHandler>();
+
         }
 
-     
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -76,7 +93,7 @@ namespace Test
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Book}/{action=Index}/{id?}");
             });
         }
     }

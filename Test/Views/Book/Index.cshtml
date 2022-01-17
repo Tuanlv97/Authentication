@@ -4,21 +4,12 @@
     ViewData["Title"] = "Index";
 }
 
-@using Microsoft.AspNetCore.Authorization
-@inject IAuthorizationService AuthorizationService
-
-@{
-    var canAddBook = AuthorizationService.AuthorizeAsync(User, "CanAddBook");
-}
 
 <h1>Index</h1>
 
-@if (canAddBook.Result.Succeeded)
-{
     <p>
         <a asp-action="Create">Create New</a>
     </p>
-}
 <table class="table">
     <thead>
         <tr>

@@ -1,14 +1,8 @@
-using BookStore.IdentityProvider.Data;
-using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 
 namespace BookStore.IdentityProvider
 {
@@ -25,15 +19,6 @@ namespace BookStore.IdentityProvider
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDbContextPool<BookStoreIdentityProviderContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("BookStoreIdentityProviderContextConnection")));
-           
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<BookStoreIdentityProviderContext>();
-
-            services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
-            services.AddTransient<IEmailSender, CustomEmailSender>();
 
             services.AddIdentityServer(options =>
             {
@@ -42,25 +27,10 @@ namespace BookStore.IdentityProvider
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
             }).AddInMemoryApiScopes(Configuration.GetSection("IdentityServer:ApiScopes"))
-                    .AddInMemoryApiResources(Configuration.GetSection("IdentityServer:IdentityResources"))
-                    .AddInMemoryClients(Configuration.GetSection("IdentityServer:Clients"))
-                    .AddAspNetIdentity<ApplicationUser>()
-                    .AddDeveloperSigningCredential();
-
-            services.Configure<IdentityOptions>(options =>
-            {
-                // Default Lockout settings.
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.AllowedForNewUsers = true;
-                options.SignIn.RequireConfirmedPhoneNumber = false;
-                options.SignIn.RequireConfirmedAccount = false;
-                options.SignIn.RequireConfirmedEmail = false;
-                options.Password.RequiredLength = 8;
-                options.Password.RequireDigit = true;
-                options.Password.RequireUppercase = true;
-                options.User.RequireUniqueEmail = true;
-            });
+               .AddInMemoryApiResources(Configuration.GetSection("IdentityServer:IdentityResources"))
+               .AddInMemoryClients(Configuration.GetSection("IdentityServer:Clients"))
+               .AddAspNetIdentity<ApplicationUser>()
+               .AddDeveloperSigningCredential();
 
             services.AddRazorPages(options =>
             {
@@ -79,7 +49,7 @@ namespace BookStore.IdentityProvider
             .AllowAnyHeader()));
         }
 
-       
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
